@@ -27,3 +27,7 @@ java {
 test {
     useJUnitPlatform()
 }
+
+run {
+    standardInput = System.in
+}
