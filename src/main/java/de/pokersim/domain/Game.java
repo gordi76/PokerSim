@@ -81,7 +81,10 @@ public final class Game {
             case PRE_FLOP -> revealFlop();
             case FLOP -> revealTurn();
             case TURN -> revealRiver();
-            case RIVER -> phase = GamePhase.SHOWDOWN;
+            case RIVER -> {
+                phase = GamePhase.SHOWDOWN;
+                finish();
+            }
             case SHOWDOWN -> finish();
             default -> throw new IllegalStateException("unsupported phase " + phase);
         }
@@ -94,7 +97,15 @@ public final class Game {
         Player player = findPlayer(playerId);
         pot.add(player.bet(amount));
     }
+public void fold(PlayerId playerId) {
+        Objects.requireNonNull(playerId, "playerId must not be null");
 
+        if (phase == GamePhase.WAITING_FOR_PLAYERS || phase == GamePhase.FINISHED) {
+           throw new IllegalStateException("cannot fold in phase " + phase);
+        }
+
+        findPlayer(playerId).fold();
+    }
     public Player determineWinner(HandEvaluator handEvaluator) {
         Objects.requireNonNull(handEvaluator, "handEvaluator must not be null");
 
