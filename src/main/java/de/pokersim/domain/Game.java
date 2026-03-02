@@ -81,7 +81,10 @@ public final class Game {
             case PRE_FLOP -> revealFlop();
             case FLOP -> revealTurn();
             case TURN -> revealRiver();
-            case RIVER -> phase = GamePhase.SHOWDOWN;
+            case RIVER -> {
+                phase = GamePhase.SHOWDOWN;
+                finish();
+            }
             case SHOWDOWN -> finish();
             default -> throw new IllegalStateException("unsupported phase " + phase);
         }
