@@ -112,6 +112,10 @@ public final class Game {
         Objects.requireNonNull(playerId, "playerId must not be null");
         Objects.requireNonNull(amount, "amount must not be null");
 
+        if (amount.amount() <= 0) {
+            throw new IllegalArgumentException("bet amount must be greater than 0");
+        }
+
         Player player = findPlayer(playerId);
         bettingRules.validateBet(player, amount, phase);
 
