@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Objects;
 
 public final class Game {
-    private static final int MINIMUM_PLAYERS = 2;
-    private static final int INITIAL_SMALL_BLIND = 10;
 
     private final GameId id;
     private final List<Player> players;
@@ -74,7 +72,7 @@ public final class Game {
         Objects.requireNonNull(randomSource, "randomSource must not be null");
         ensureWaitingForPlayers();
 
-        if (players.size() < MINIMUM_PLAYERS) {
+        if (players.size() < GameRules.MIN_PLAYERS) {
             throw new IllegalStateException("at least two players are required");
         }
 
@@ -180,8 +178,8 @@ public final class Game {
 
     private void collectInitialBets() {
         for (Player player : players) {
-            if (player.chips().amount() >= INITIAL_SMALL_BLIND) {
-                Chips blind = new Chips(INITIAL_SMALL_BLIND);
+            if (player.chips().amount() >= GameRules.SMALL_BLIND) {
+                Chips blind = new Chips(GameRules.SMALL_BLIND);
                 pot.add(player.bet(blind));
                 actionHistory.record(player.id(), PlayerActionType.SMALL_BLIND, blind, phase);
             }

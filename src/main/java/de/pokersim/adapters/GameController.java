@@ -77,7 +77,7 @@ public final class GameController {
         return playerName + "'s hand: " + cards;
     }
 
-    public ShowdownResult runShowdown() {
+    public GameSummary runShowdown() {
         ensureGameStarted();
         Game game = gameService.getGame(currentGameId);
 
@@ -93,9 +93,11 @@ public final class GameController {
         // Evaluate hand ranks for all players before payout
         TexasHoldemHandEvaluator evaluator = new TexasHoldemHandEvaluator();
         List<String> summaries = new ArrayList<>();
+        int foldedCount = 0;
         for (Player player : game.players()) {
             if (player.hasFolded()) {
                 summaries.add(player.name() + ": [folded]");
+                foldedCount++;
             } else {
                 List<Card> allCards = new ArrayList<>(player.holeCards());
                 allCards.addAll(game.communityCards());
@@ -108,7 +110,7 @@ public final class GameController {
         int potAmount = game.pot().total().amount();
         Player winner = gameService.showdown(currentGameId);
 
-        return new ShowdownResult(summaries, winner.name(), potAmount);
+        return new GameSummary(summaries, winner.name(), potAmount, game.players().size(), foldedCount);
     }
 
     public boolean hasCurrentGame() {

@@ -2,8 +2,9 @@ package de.pokersim.cli;
 
 import de.pokersim.adapters.CommandParser;
 import de.pokersim.adapters.GameController;
+import de.pokersim.adapters.GameSummary;
 import de.pokersim.adapters.GameViewModel;
-import de.pokersim.adapters.ShowdownResult;
+import de.pokersim.domain.GameRules;
 
 import java.util.List;
 
@@ -88,12 +89,16 @@ public final class PokerCli {
                 yield true;
             }
             case "showdown" -> {
-                ShowdownResult result = gameController.runShowdown();
-                printShowdown(result);
+                GameSummary summary = gameController.runShowdown();
+                printSummary(summary);
                 yield true;
             }
             case "help" -> {
-                printHelp();
+                if (!command.arguments().isEmpty() && command.arguments().get(0).equals("rules")) {
+                    printRules();
+                } else {
+                    printHelp();
+                }
                 yield true;
             }
             case "exit" -> false;
@@ -135,6 +140,7 @@ public final class PokerCli {
         consoleIO.printLine("  hand <player>            -> shows a player's hole cards");
         consoleIO.printLine("  showdown                 -> evaluates hands and determines the winner");
         consoleIO.printLine("  help                     -> prints this help");
+        consoleIO.printLine("  help rules               -> prints the game rules");
         consoleIO.printLine("  exit                     -> closes the application");
     }
 
@@ -149,15 +155,26 @@ public final class PokerCli {
         }
     }
 
-    private void printShowdown(ShowdownResult result) {
+    private void printRules() {
+        consoleIO.printLine("Game Rules (Texas Hold'em):");
+        consoleIO.printLine("  Starting chips : " + GameRules.INITIAL_CHIPS);
+        consoleIO.printLine("  Small blind    : " + GameRules.SMALL_BLIND);
+        consoleIO.printLine("  Min players    : " + GameRules.MIN_PLAYERS);
+        consoleIO.printLine("  Max players    : " + GameRules.MAX_PLAYERS);
+    }
+
+    private void printSummary(GameSummary summary) {
         consoleIO.printLine("");
-        consoleIO.printLine("Showdown:");
-        for (String summary : result.playerHandSummaries()) {
-            consoleIO.printLine("  " + summary);
+        consoleIO.printLine("=== SHOWDOWN ===");
+        for (String line : summary.playerHandSummaries()) {
+            consoleIO.printLine("  " + line);
         }
         consoleIO.printLine("");
-        consoleIO.printLine("Winner: " + result.winnerName());
-        consoleIO.printLine(result.winnerName() + " wins " + result.chipsWon() + " chips.");
+        consoleIO.printLine("Winner: " + summary.winnerName());
+        consoleIO.printLine(summary.winnerName() + " wins " + summary.chipsWon() + " chips.");
+        if (summary.foldedPlayers() > 0) {
+            consoleIO.printLine(summary.foldedPlayers() + " of " + summary.totalPlayers() + " player(s) folded.");
+        }
         consoleIO.printLine("Game phase: FINISHED");
     }
 }
