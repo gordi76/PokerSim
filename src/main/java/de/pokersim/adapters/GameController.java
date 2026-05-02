@@ -59,6 +59,24 @@ public final class GameController {
         return gamePresenter.present(game);
     }
 
+    public String getPlayerHand(String playerName) {
+        ensureGameStarted();
+        Game game = gameService.getGame(currentGameId);
+        PlayerId playerId = resolvePlayerId(game, playerName);
+        Player player = null;
+        for (Player p : game.players()) {
+            if (p.id().equals(playerId)) {
+                player = p;
+                break;
+            }
+        }
+        if (player.hasFolded()) {
+            return playerName + " has folded.";
+        }
+        String cards = String.join(" ", gamePresenter.formatCards(player.holeCards()));
+        return playerName + "'s hand: " + cards;
+    }
+
     public ShowdownResult runShowdown() {
         ensureGameStarted();
         Game game = gameService.getGame(currentGameId);

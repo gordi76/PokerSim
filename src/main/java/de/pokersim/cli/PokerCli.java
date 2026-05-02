@@ -79,6 +79,14 @@ public final class PokerCli {
                 printGame(viewModel);
                 yield true;
             }
+            case "hand" -> {
+                if (command.arguments().isEmpty()) {
+                    consoleIO.printLine("Usage: hand <player>");
+                    yield true;
+                }
+                consoleIO.printLine(gameController.getPlayerHand(command.arguments().get(0)));
+                yield true;
+            }
             case "showdown" -> {
                 ShowdownResult result = gameController.runShowdown();
                 printShowdown(result);
@@ -124,6 +132,7 @@ public final class PokerCli {
         consoleIO.printLine("  bet <player> <amount>    -> player puts chips into the pot");
         consoleIO.printLine("  fold <player>            -> player gives up the round");
         consoleIO.printLine("  show                     -> shows the current game");
+        consoleIO.printLine("  hand <player>            -> shows a player's hole cards");
         consoleIO.printLine("  showdown                 -> evaluates hands and determines the winner");
         consoleIO.printLine("  help                     -> prints this help");
         consoleIO.printLine("  exit                     -> closes the application");
