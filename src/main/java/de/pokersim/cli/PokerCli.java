@@ -108,7 +108,7 @@ public final class PokerCli {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException exception) {
-            throw new IllegalArgumentException("amount must be an integer: " + value);
+            throw new IllegalArgumentException("'" + value + "' is not a valid amount (expected integer, e.g. 50)");
         }
     }
 

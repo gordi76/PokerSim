@@ -103,12 +103,17 @@ public final class GameController {
                 return player.id();
             }
         }
-        throw new IllegalArgumentException("unknown player: " + playerName);
+        List<String> names = new ArrayList<>();
+        for (Player player : game.players()) {
+            names.add(player.name());
+        }
+        throw new IllegalArgumentException(
+                "unknown player '" + playerName + "'. Available players: " + String.join(", ", names));
     }
 
     private void ensureGameStarted() {
         if (currentGameId == null) {
-            throw new IllegalStateException("no game has been started yet");
+            throw new IllegalStateException("no game started yet. Use: start Alice Bob");
         }
     }
 }
