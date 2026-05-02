@@ -4,14 +4,17 @@ import de.pokersim.application.GameService;
 import de.pokersim.domain.Card;
 import de.pokersim.domain.Chips;
 import de.pokersim.domain.Game;
+import de.pokersim.domain.GameCommand;
 import de.pokersim.domain.GameId;
 import de.pokersim.domain.GamePhase;
 import de.pokersim.domain.HandRank;
 import de.pokersim.domain.Player;
+import de.pokersim.domain.AllowedAction;
 import de.pokersim.domain.PlayerId;
 import de.pokersim.domain.TexasHoldemHandEvaluator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,6 +23,7 @@ public final class GameController {
     private final GameService gameService;
     private final GamePresenter gamePresenter;
     private GameId currentGameId;
+    private final List<GameCommand> commandHistory = new ArrayList<>();
 
     public GameController(GameService gameService, GamePresenter gamePresenter) {
         this.gameService = Objects.requireNonNull(gameService, "gameService must not be null");
@@ -33,23 +37,29 @@ public final class GameController {
 
     public GameViewModel advancePhase() {
         ensureGameStarted();
+        ensureActionAllowed(AllowedAction.ADVANCE_PHASE);
         Game game = gameService.advancePhase(currentGameId);
+        commandHistory.add(new GameCommand.AdvancePhaseCommand());
         return gamePresenter.present(game);
     }
 
     public GameViewModel placeBet(String playerName, int amount) {
         ensureGameStarted();
+        ensureActionAllowed(AllowedAction.BET);
         Game current = gameService.getGame(currentGameId);
         PlayerId playerId = resolvePlayerId(current, playerName);
         Game game = gameService.placeBet(currentGameId, playerId, new Chips(amount));
+        commandHistory.add(new GameCommand.BetCommand(playerName, amount));
         return gamePresenter.present(game);
     }
 
     public GameViewModel fold(String playerName) {
         ensureGameStarted();
+        ensureActionAllowed(AllowedAction.FOLD);
         Game current = gameService.getGame(currentGameId);
         PlayerId playerId = resolvePlayerId(current, playerName);
         Game game = gameService.fold(currentGameId, playerId);
+        commandHistory.add(new GameCommand.FoldCommand(playerName));
         return gamePresenter.present(game);
     }
 
@@ -109,8 +119,13 @@ public final class GameController {
 
         int potAmount = game.pot().total().amount();
         Player winner = gameService.showdown(currentGameId);
+        commandHistory.add(new GameCommand.ShowdownCommand());
 
         return new GameSummary(summaries, winner.name(), potAmount, game.players().size(), foldedCount);
+    }
+
+    public List<GameCommand> commandHistory() {
+        return Collections.unmodifiableList(commandHistory);
     }
 
     public boolean hasCurrentGame() {
@@ -129,6 +144,16 @@ public final class GameController {
         }
         throw new IllegalArgumentException(
                 "unknown player '" + playerName + "'. Available players: " + String.join(", ", names));
+    }
+
+    private void ensureActionAllowed(AllowedAction action) {
+        Game game = gameService.getGame(currentGameId);
+        if (!action.isAllowedIn(game.phase())) {
+            throw new IllegalStateException(
+                    "'" + action.name().toLowerCase().replace('_', ' ')
+                    + "' is not allowed in phase " + game.phase()
+                    + ". Allowed actions: " + AllowedAction.allowedIn(game.phase()));
+        }
     }
 
     private void ensureGameStarted() {

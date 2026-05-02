@@ -4,6 +4,7 @@ import de.pokersim.adapters.CommandParser;
 import de.pokersim.adapters.GameController;
 import de.pokersim.adapters.GameSummary;
 import de.pokersim.adapters.GameViewModel;
+import de.pokersim.domain.GameCommand;
 import de.pokersim.domain.GameRules;
 
 import java.util.List;
@@ -93,6 +94,18 @@ public final class PokerCli {
                 printSummary(summary);
                 yield true;
             }
+            case "history" -> {
+                List<GameCommand> history = gameController.commandHistory();
+                if (history.isEmpty()) {
+                    consoleIO.printLine("No actions yet.");
+                } else {
+                    consoleIO.printLine("Action history:");
+                    for (int i = 0; i < history.size(); i++) {
+                        consoleIO.printLine("  " + (i + 1) + ". " + history.get(i));
+                    }
+                }
+                yield true;
+            }
             case "help" -> {
                 if (!command.arguments().isEmpty() && command.arguments().get(0).equals("rules")) {
                     printRules();
@@ -139,6 +152,7 @@ public final class PokerCli {
         consoleIO.printLine("  show                     -> shows the current game");
         consoleIO.printLine("  hand <player>            -> shows a player's hole cards");
         consoleIO.printLine("  showdown                 -> evaluates hands and determines the winner");
+        consoleIO.printLine("  history                  -> shows all actions taken this game");
         consoleIO.printLine("  help                     -> prints this help");
         consoleIO.printLine("  help rules               -> prints the game rules");
         consoleIO.printLine("  exit                     -> closes the application");
