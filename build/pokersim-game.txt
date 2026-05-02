@@ -1,5 +1,0 @@
-gameId=66815623-c05c-4de0-85f0-c4491122cc65
-phase=FINISHED
-players=2
-communityCards=5
-pot=0

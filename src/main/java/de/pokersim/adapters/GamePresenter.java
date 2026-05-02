@@ -13,9 +13,11 @@ public final class GamePresenter {
         List<String> players = new ArrayList<>();
 
         for (Player player : game.players()) {
+            String status = player.hasFolded() ? " | FOLDED" : "";
             players.add(player.name()
                     + " | chips: " + player.chips().amount()
-                    + " | hand: " + formatCards(player.holeCards()));
+                    + " | hand: " + formatCards(player.holeCards())
+                    + status);
         }
 
         return new GameViewModel(

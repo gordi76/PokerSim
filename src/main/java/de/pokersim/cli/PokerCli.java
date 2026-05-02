@@ -7,6 +7,7 @@ import de.pokersim.adapters.GameViewModel;
 import java.util.List;
 
 public final class PokerCli {
+
     private final ConsoleIO consoleIO;
     private final CommandParser commandParser;
     private final GameController gameController;
@@ -25,6 +26,9 @@ public final class PokerCli {
             consoleIO.printLine("");
             consoleIO.printLine("Command:");
             String input = consoleIO.readLine();
+            if (input == null) {
+                break;
+            }
             CommandParser.ParsedCommand command = commandParser.parse(input);
 
             try {
@@ -49,6 +53,26 @@ public final class PokerCli {
                 printGame(viewModel);
                 yield true;
             }
+            case "bet" -> {
+                if (command.arguments().size() < 2) {
+                    consoleIO.printLine("Usage: bet <player> <amount>");
+                    yield true;
+                }
+                String playerName = command.arguments().get(0);
+                int amount = parseInt(command.arguments().get(1));
+                GameViewModel viewModel = gameController.placeBet(playerName, amount);
+                printGame(viewModel);
+                yield true;
+            }
+            case "fold" -> {
+                if (command.arguments().isEmpty()) {
+                    consoleIO.printLine("Usage: fold <player>");
+                    yield true;
+                }
+                GameViewModel viewModel = gameController.fold(command.arguments().get(0));
+                printGame(viewModel);
+                yield true;
+            }
             case "show" -> {
                 GameViewModel viewModel = gameController.showCurrentGame();
                 printGame(viewModel);
@@ -59,6 +83,7 @@ public final class PokerCli {
                 yield true;
             }
             case "exit" -> false;
+            case "" -> true;
             default -> {
                 consoleIO.printLine("Unknown command. Type 'help' for available commands.");
                 yield true;
@@ -70,8 +95,15 @@ public final class PokerCli {
         if (arguments.size() >= 2) {
             return arguments;
         }
-
         return List.of("Alice", "Bob");
+    }
+
+    private int parseInt(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("amount must be an integer: " + value);
+        }
     }
 
     private void printWelcome() {
@@ -83,7 +115,10 @@ public final class PokerCli {
         consoleIO.printLine("Commands:");
         consoleIO.printLine("  start Alice Bob Charlie  -> starts a new game");
         consoleIO.printLine("  next                     -> advances to the next phase");
+        consoleIO.printLine("  bet <player> <amount>    -> player puts chips into the pot");
+        consoleIO.printLine("  fold <player>            -> player gives up the round");
         consoleIO.printLine("  show                     -> shows the current game");
+        consoleIO.printLine("  help                     -> prints this help");
         consoleIO.printLine("  exit                     -> closes the application");
     }
 
