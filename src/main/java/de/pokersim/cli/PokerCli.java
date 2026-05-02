@@ -131,15 +131,12 @@ public final class PokerCli {
 
     private void printGame(GameViewModel viewModel) {
         consoleIO.printLine("");
-        consoleIO.printLine("Game: " + viewModel.gameId());
-        consoleIO.printLine("Phase: " + viewModel.phase());
-        consoleIO.printLine(viewModel.pot());
-
-        consoleIO.printLine("Community cards: " + viewModel.communityCards());
-
-        consoleIO.printLine("Players:");
+        consoleIO.printLine("=== " + viewModel.phase() + " ===");
+        consoleIO.printLine("  " + viewModel.pot());
+        consoleIO.printLine("  Community: " + viewModel.communityLabel());
+        consoleIO.printLine("  Players:");
         for (String player : viewModel.players()) {
-            consoleIO.printLine("  - " + player);
+            consoleIO.printLine("    " + player);
         }
     }
 

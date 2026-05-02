@@ -48,7 +48,7 @@ class PokerCliTest {
         cli.run();
 
         assertTrue(console.printed().stream()
-                        .anyMatch(line -> line.contains("Phase: FINISHED")),
+                        .anyMatch(line -> line.contains("FINISHED")),
                 "expected the demo run to end in FINISHED, output was: "
                         + console.printed());
     }
