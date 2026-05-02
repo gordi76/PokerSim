@@ -29,7 +29,7 @@ public final class GamePresenter {
         );
     }
 
-    private List<String> formatCards(List<Card> cards) {
+    public List<String> formatCards(List<Card> cards) {
         List<String> formattedCards = new ArrayList<>();
 
         for (Card card : cards) {

@@ -3,6 +3,7 @@ package de.pokersim.cli;
 import de.pokersim.adapters.CommandParser;
 import de.pokersim.adapters.GameController;
 import de.pokersim.adapters.GameViewModel;
+import de.pokersim.adapters.ShowdownResult;
 
 import java.util.List;
 
@@ -78,6 +79,11 @@ public final class PokerCli {
                 printGame(viewModel);
                 yield true;
             }
+            case "showdown" -> {
+                ShowdownResult result = gameController.runShowdown();
+                printShowdown(result);
+                yield true;
+            }
             case "help" -> {
                 printHelp();
                 yield true;
@@ -118,6 +124,7 @@ public final class PokerCli {
         consoleIO.printLine("  bet <player> <amount>    -> player puts chips into the pot");
         consoleIO.printLine("  fold <player>            -> player gives up the round");
         consoleIO.printLine("  show                     -> shows the current game");
+        consoleIO.printLine("  showdown                 -> evaluates hands and determines the winner");
         consoleIO.printLine("  help                     -> prints this help");
         consoleIO.printLine("  exit                     -> closes the application");
     }
@@ -134,5 +141,17 @@ public final class PokerCli {
         for (String player : viewModel.players()) {
             consoleIO.printLine("  - " + player);
         }
+    }
+
+    private void printShowdown(ShowdownResult result) {
+        consoleIO.printLine("");
+        consoleIO.printLine("Showdown:");
+        for (String summary : result.playerHandSummaries()) {
+            consoleIO.printLine("  " + summary);
+        }
+        consoleIO.printLine("");
+        consoleIO.printLine("Winner: " + result.winnerName());
+        consoleIO.printLine(result.winnerName() + " wins " + result.chipsWon() + " chips.");
+        consoleIO.printLine("Game phase: FINISHED");
     }
 }

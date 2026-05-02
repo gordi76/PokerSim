@@ -40,6 +40,7 @@ class PokerCliTest {
                 "next",
                 "next",
                 "next",
+                "next",
                 "exit"
         );
         PokerCli cli = newCli(console);

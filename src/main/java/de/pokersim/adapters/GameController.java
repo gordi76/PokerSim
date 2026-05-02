@@ -1,12 +1,17 @@
 package de.pokersim.adapters;
 
 import de.pokersim.application.GameService;
+import de.pokersim.domain.Card;
 import de.pokersim.domain.Chips;
 import de.pokersim.domain.Game;
 import de.pokersim.domain.GameId;
+import de.pokersim.domain.GamePhase;
+import de.pokersim.domain.HandRank;
 import de.pokersim.domain.Player;
 import de.pokersim.domain.PlayerId;
+import de.pokersim.domain.TexasHoldemHandEvaluator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,6 +57,40 @@ public final class GameController {
         ensureGameStarted();
         Game game = gameService.getGame(currentGameId);
         return gamePresenter.present(game);
+    }
+
+    public ShowdownResult runShowdown() {
+        ensureGameStarted();
+        Game game = gameService.getGame(currentGameId);
+
+        if (game.phase() == GamePhase.WAITING_FOR_PLAYERS || game.phase() == GamePhase.FINISHED) {
+            throw new IllegalStateException("cannot run showdown in phase " + game.phase());
+        }
+
+        // Advance to SHOWDOWN phase
+        while (game.phase() != GamePhase.SHOWDOWN) {
+            game = gameService.advancePhase(currentGameId);
+        }
+
+        // Evaluate hand ranks for all players before payout
+        TexasHoldemHandEvaluator evaluator = new TexasHoldemHandEvaluator();
+        List<String> summaries = new ArrayList<>();
+        for (Player player : game.players()) {
+            if (player.hasFolded()) {
+                summaries.add(player.name() + ": [folded]");
+            } else {
+                List<Card> allCards = new ArrayList<>(player.holeCards());
+                allCards.addAll(game.communityCards());
+                HandRank rank = evaluator.evaluate(allCards);
+                String cards = String.join(", ", gamePresenter.formatCards(player.holeCards()));
+                summaries.add(player.name() + ": " + cards + " -> " + rank.name());
+            }
+        }
+
+        int potAmount = game.pot().total().amount();
+        Player winner = gameService.showdown(currentGameId);
+
+        return new ShowdownResult(summaries, winner.name(), potAmount);
     }
 
     public boolean hasCurrentGame() {
