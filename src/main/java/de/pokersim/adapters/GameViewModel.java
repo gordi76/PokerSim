@@ -7,6 +7,7 @@ public final class GameViewModel {
     private final String phase;
     private final List<String> players;
     private final List<String> communityCards;
+    private final String communityLabel;
     private final String pot;
 
     public GameViewModel(
@@ -14,12 +15,14 @@ public final class GameViewModel {
             String phase,
             List<String> players,
             List<String> communityCards,
+            String communityLabel,
             String pot
     ) {
         this.gameId = gameId;
         this.phase = phase;
         this.players = List.copyOf(players);
         this.communityCards = List.copyOf(communityCards);
+        this.communityLabel = communityLabel;
         this.pot = pot;
     }
 
@@ -37,6 +40,10 @@ public final class GameViewModel {
 
     public List<String> communityCards() {
         return communityCards;
+    }
+
+    public String communityLabel() {
+        return communityLabel;
     }
 
     public String pot() {

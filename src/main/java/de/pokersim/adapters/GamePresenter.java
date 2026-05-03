@@ -2,6 +2,7 @@ package de.pokersim.adapters;
 
 import de.pokersim.domain.Card;
 import de.pokersim.domain.Game;
+import de.pokersim.domain.GamePhase;
 import de.pokersim.domain.Player;
 
 import java.util.ArrayList;
@@ -10,14 +11,18 @@ import java.util.List;
 public final class GamePresenter {
 
     public GameViewModel present(Game game) {
-        List<String> players = new ArrayList<>();
+        boolean revealHoleCards = game.phase() == GamePhase.SHOWDOWN
+                || game.phase() == GamePhase.FINISHED;
 
+        List<String> players = new ArrayList<>();
         for (Player player : game.players()) {
-            String status = player.hasFolded() ? " | FOLDED" : "";
-            players.add(player.name()
-                    + " | chips: " + player.chips().amount()
-                    + " | hand: " + formatCards(player.holeCards())
-                    + status);
+            String hand = revealHoleCards
+                    ? String.join(" ", formatCards(player.holeCards()))
+                    : "?? ??";
+            String status = player.hasFolded() ? " [folded]" : "";
+            players.add(player.name() + status
+                    + "  |  chips: " + player.chips().amount()
+                    + "  |  hand: " + hand);
         }
 
         return new GameViewModel(
@@ -25,17 +30,32 @@ public final class GamePresenter {
                 game.phase().name(),
                 players,
                 formatCards(game.communityCards()),
+                communityLabel(game),
                 game.pot().toString()
         );
     }
 
-    private List<String> formatCards(List<Card> cards) {
-        List<String> formattedCards = new ArrayList<>();
+    private String communityLabel(Game game) {
+        List<Card> cards = game.communityCards();
+        if (cards.isEmpty()) {
+            return "(no community cards yet)";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Flop: ").append(String.join(" ", formatCards(cards.subList(0, 3))));
+        if (cards.size() >= 4) {
+            sb.append("  |  Turn: ").append(formatCards(cards.subList(3, 4)).get(0));
+        }
+        if (cards.size() >= 5) {
+            sb.append("  |  River: ").append(formatCards(cards.subList(4, 5)).get(0));
+        }
+        return sb.toString();
+    }
 
+    public List<String> formatCards(List<Card> cards) {
+        List<String> formattedCards = new ArrayList<>();
         for (Card card : cards) {
             formattedCards.add(formatCard(card));
         }
-
         return formattedCards;
     }
 

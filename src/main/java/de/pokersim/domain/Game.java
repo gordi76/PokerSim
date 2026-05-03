@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Objects;
 
 public final class Game {
-    private static final int MINIMUM_PLAYERS = 2;
-    private static final int INITIAL_SMALL_BLIND = 10;
 
     private final GameId id;
     private final List<Player> players;
@@ -74,7 +72,7 @@ public final class Game {
         Objects.requireNonNull(randomSource, "randomSource must not be null");
         ensureWaitingForPlayers();
 
-        if (players.size() < MINIMUM_PLAYERS) {
+        if (players.size() < GameRules.MIN_PLAYERS) {
             throw new IllegalStateException("at least two players are required");
         }
 
@@ -99,10 +97,7 @@ public final class Game {
             case PRE_FLOP -> revealFlop();
             case FLOP -> revealTurn();
             case TURN -> revealRiver();
-            case RIVER -> {
-                phase = GamePhase.SHOWDOWN;
-                finish();
-            }
+            case RIVER -> phase = GamePhase.SHOWDOWN;
             case SHOWDOWN -> finish();
             default -> throw new IllegalStateException("unsupported phase " + phase);
         }
@@ -111,6 +106,10 @@ public final class Game {
     public void placeBet(PlayerId playerId, Chips amount) {
         Objects.requireNonNull(playerId, "playerId must not be null");
         Objects.requireNonNull(amount, "amount must not be null");
+
+        if (amount.amount() <= 0) {
+            throw new IllegalArgumentException("bet amount must be greater than 0");
+        }
 
         Player player = findPlayer(playerId);
         bettingRules.validateBet(player, amount, phase);
@@ -179,8 +178,8 @@ public final class Game {
 
     private void collectInitialBets() {
         for (Player player : players) {
-            if (player.chips().amount() >= INITIAL_SMALL_BLIND) {
-                Chips blind = new Chips(INITIAL_SMALL_BLIND);
+            if (player.chips().amount() >= GameRules.SMALL_BLIND) {
+                Chips blind = new Chips(GameRules.SMALL_BLIND);
                 pot.add(player.bet(blind));
                 actionHistory.record(player.id(), PlayerActionType.SMALL_BLIND, blind, phase);
             }

@@ -3,6 +3,7 @@ package de.pokersim.application;
 import de.pokersim.domain.Chips;
 import de.pokersim.domain.Game;
 import de.pokersim.domain.GameId;
+import de.pokersim.domain.GameRules;
 import de.pokersim.infrastructure.GameRepository;
 import de.pokersim.infrastructure.RandomSource;
 
@@ -10,7 +11,6 @@ import java.util.List;
 import java.util.Objects;
 
 public final class StartGameUseCase {
-    private static final int INITIAL_CHIPS = 1_000;
 
     private final GameRepository gameRepository;
     private final RandomSource randomSource;
@@ -28,7 +28,7 @@ public final class StartGameUseCase {
         Game game = new Game(GameId.newId());
 
         for (String playerName : playerNames) {
-            game.addPlayer(playerName, new Chips(INITIAL_CHIPS));
+            game.addPlayer(playerName, new Chips(GameRules.INITIAL_CHIPS));
         }
 
         game.start(randomSource);

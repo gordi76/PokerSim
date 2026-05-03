@@ -64,3 +64,4 @@ public final class PlayerAction {
         return "#" + sequenceNumber + " " + playerId + " " + type + " during " + phase;
     }
 }
+
