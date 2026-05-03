@@ -15,6 +15,9 @@ public final class Game {
     private final List<Player> players;
     private final List<Card> communityCards;
     private final Pot pot;
+    private final ActionHistory actionHistory;
+    private final BettingRules bettingRules;
+
     private GamePhase phase;
     private Deck deck;
 
@@ -23,6 +26,8 @@ public final class Game {
         this.players = new ArrayList<>();
         this.communityCards = new ArrayList<>();
         this.pot = new Pot();
+        this.actionHistory = new ActionHistory();
+        this.bettingRules = new BettingRules();
         this.phase = GamePhase.WAITING_FOR_PLAYERS;
         this.deck = Deck.standard52CardDeck();
     }
@@ -47,6 +52,19 @@ public final class Game {
         return pot;
     }
 
+    public ActionHistory actionHistory() {
+        return actionHistory;
+    }
+
+    public RoundState roundState() {
+        return new RoundState(
+                phase,
+                BettingRound.from(phase),
+                pot.total(),
+                actionHistory.actions()
+        );
+    }
+
     public void addPlayer(String name, Chips chips) {
         ensureWaitingForPlayers();
         players.add(new Player(PlayerId.newId(), name, chips));
@@ -68,8 +86,8 @@ public final class Game {
         }
 
         dealHoleCards();
-        collectInitialBets();
         phase = GamePhase.PRE_FLOP;
+        collectInitialBets();
     }
 
     public void advancePhase() {
@@ -95,17 +113,22 @@ public final class Game {
         Objects.requireNonNull(amount, "amount must not be null");
 
         Player player = findPlayer(playerId);
+        bettingRules.validateBet(player, amount, phase);
+
         pot.add(player.bet(amount));
+        actionHistory.record(playerId, PlayerActionType.BET, amount, phase);
     }
-public void fold(PlayerId playerId) {
+
+    public void fold(PlayerId playerId) {
         Objects.requireNonNull(playerId, "playerId must not be null");
 
-        if (phase == GamePhase.WAITING_FOR_PLAYERS || phase == GamePhase.FINISHED) {
-           throw new IllegalStateException("cannot fold in phase " + phase);
-        }
+        Player player = findPlayer(playerId);
+        bettingRules.validateFold(player, phase);
 
-        findPlayer(playerId).fold();
+        player.fold();
+        actionHistory.record(playerId, PlayerActionType.FOLD, phase);
     }
+
     public Player determineWinner(HandEvaluator handEvaluator) {
         Objects.requireNonNull(handEvaluator, "handEvaluator must not be null");
 
@@ -138,7 +161,11 @@ public void fold(PlayerId playerId) {
 
     public void payOutTo(Player winner) {
         Objects.requireNonNull(winner, "winner must not be null");
-        winner.win(pot.payOut());
+
+        Chips payout = pot.payOut();
+        winner.win(payout);
+        actionHistory.record(winner.id(), PlayerActionType.WIN_POT, payout, phase);
+
         phase = GamePhase.FINISHED;
     }
 
@@ -153,7 +180,9 @@ public void fold(PlayerId playerId) {
     private void collectInitialBets() {
         for (Player player : players) {
             if (player.chips().amount() >= INITIAL_SMALL_BLIND) {
-                pot.add(player.bet(new Chips(INITIAL_SMALL_BLIND)));
+                Chips blind = new Chips(INITIAL_SMALL_BLIND);
+                pot.add(player.bet(blind));
+                actionHistory.record(player.id(), PlayerActionType.SMALL_BLIND, blind, phase);
             }
         }
     }
