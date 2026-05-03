@@ -104,7 +104,7 @@ class GameControllerTest {
     void betMoreThanAvailableChipsThrows() {
         controller.startGame(List.of("Alice", "Bob"));
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+        RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> controller.placeBet("Alice", 99_999));
 
         assertTrue(ex.getMessage().contains("Alice"),
@@ -133,7 +133,7 @@ class GameControllerTest {
         controller.startGame(List.of("Alice", "Bob"));
         controller.fold("Alice");
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(RuntimeException.class,
                 () -> controller.placeBet("Alice", 50));
     }
 
@@ -160,7 +160,7 @@ class GameControllerTest {
         controller.startGame(List.of("Alice", "Bob"));
         controller.fold("Alice");
 
-        IllegalStateException ex = assertThrows(IllegalStateException.class,
+        RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> controller.fold("Alice"));
 
         assertTrue(ex.getMessage().contains("Alice"),

@@ -36,7 +36,7 @@ public final class BettingRules {
 
     private void ensurePlayerIsActive(Player player) {
         if (player.hasFolded()) {
-            throw new InvalidPlayerActionException("folded players cannot perform actions");
+            throw new InvalidPlayerActionException(player.name() + " has already folded and cannot perform actions");
         }
     }
 
@@ -48,7 +48,9 @@ public final class BettingRules {
 
     private void ensurePlayerCanPay(Player player, Chips amount) {
         if (player.chips().compareTo(amount) < 0) {
-            throw new InvalidPlayerActionException("player does not have enough chips");
+            throw new InvalidPlayerActionException(
+                    player.name() + " does not have enough chips (has " + player.chips().amount()
+                    + ", tried to bet " + amount.amount() + ")");
         }
     }
 }
