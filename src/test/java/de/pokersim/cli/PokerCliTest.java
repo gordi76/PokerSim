@@ -16,13 +16,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests fuer die {@link PokerCli}.
- *
- * <p>Verwendet einen {@link FakeConsoleIO} (Stub/Spy), um Eingaben zu
- * scripten und Ausgaben zu inspizieren - ohne den echten
- * {@link System#in}/{@link System#out} zu binden.</p>
- */
 class PokerCliTest {
 
     @Test
@@ -78,11 +71,6 @@ class PokerCliTest {
         return new PokerCli(console, new CommandParser(), controller);
     }
 
-    /**
-     * Stub fuer {@link ConsoleIO}: speichert alle ausgegebenen Zeilen
-     * und liefert vorab gesetzte Eingaben in der Reihenfolge der
-     * {@code readLine()}-Aufrufe.
-     */
     private static final class FakeConsoleIO implements ConsoleIO {
 
         private final Deque<String> inputs = new ArrayDeque<>();

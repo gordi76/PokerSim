@@ -5,12 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests fuer den {@link CommandParser}.
- *
- * <p>Pruefen, dass die textuelle CLI-Eingabe robust in eine
- * {@link CommandParser.ParsedCommand} ueberfuehrt wird.</p>
- */
 class CommandParserTest {
 
     private final CommandParser parser = new CommandParser();

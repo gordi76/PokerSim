@@ -5,13 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests fuer den {@link Pot}.
- *
- * <p>Verteidigen die Invarianten der Pot-Domaen-Klasse: Chips kommen
- * dazu, der Pot ist nach Auszahlung wieder leer, und die ausgezahlte
- * Summe entspricht dem letzten Stand.</p>
- */
 class PotTest {
 
     @Test

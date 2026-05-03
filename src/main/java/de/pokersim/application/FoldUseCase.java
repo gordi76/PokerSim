@@ -7,13 +7,6 @@ import de.pokersim.infrastructure.GameRepository;
 
 import java.util.Objects;
 
-/**
- * Use Case: ein Spieler steigt aus der laufenden Runde aus (Fold).
- *
- * Eigenstaendige Use-Case-Klasse, damit jede Spieler-Aktion (Bet, Fold,
- * spaeter z.B. Check) eine klare, einzeln testbare Verantwortung hat
- * (Single Responsibility Principle).
- */
 public final class FoldUseCase {
 
     private final GameRepository gameRepository;

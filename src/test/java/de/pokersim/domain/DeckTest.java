@@ -6,13 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests fuer das {@link Deck}.
- *
- * <p>Verifizieren, dass das Standard-Deck 52 unterschiedliche Karten
- * enthaelt und der Misch-Algorithmus deterministisch verwendet werden
- * kann (mit Hilfe des {@link FixedRandomSource}-Fakes).</p>
- */
 class DeckTest {
 
     @Test

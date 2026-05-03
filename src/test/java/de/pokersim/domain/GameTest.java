@@ -6,13 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests fuer das Aggregate Root {@link Game}.
- *
- * <p>Pruefen den vollstaendigen Lebenszyklus eines Spiels und
- * stellen sicher, dass Domain-Invarianten (z.B. "kein Phasenwechsel
- * vor Spielstart", "Karten erst nach Spielstart") eingehalten werden.</p>
- */
 class GameTest {
 
     @Test
@@ -98,11 +91,6 @@ class GameTest {
         game.advancePhase(); // RIVER
         game.advancePhase(); // -> auto showdown / FINISHED
 
-        // The folded player must not have received the pot.
-        // Active player(s) must have collected chips. We assert that
-        // the folded player's chip count is strictly less than every
-        // active player's chip count would be impossible to predict
-        // here, so we just check that *someone* won the pot.
         boolean anyoneAboveStartingStack = game.players().stream()
                 .filter(p -> !p.hasFolded())
                 .anyMatch(p -> p.chips().amount() > 990);

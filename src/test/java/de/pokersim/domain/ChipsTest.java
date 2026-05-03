@@ -5,13 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests fuer das Value Object {@link Chips}.
- *
- * <p>Pruefen die Wertsemantik (Unveraenderlichkeit, Plus/Minus,
- * Vergleich) und verteidigen die Domaen-Invarianten (keine
- * negativen Chips, kein Ueberziehen).</p>
- */
 class ChipsTest {
 
     @Test
@@ -23,7 +16,6 @@ class ChipsTest {
         Chips sum = a.plus(b);
 
         assertEquals(150, sum.amount());
-        // Value-Object-Invariante: Operanden bleiben unveraendert
         assertEquals(100, a.amount());
         assertEquals(50, b.amount());
     }

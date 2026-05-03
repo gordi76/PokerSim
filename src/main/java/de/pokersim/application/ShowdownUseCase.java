@@ -9,17 +9,6 @@ import de.pokersim.infrastructure.GameRepository;
 
 import java.util.Objects;
 
-/**
- * Use Case: Showdown durchfuehren - Sieger ermitteln und Pot auszahlen.
- *
- * Trennt die "wann?"-Frage (Anwendungs-Schicht) von der "wie?"-Frage
- * (Domain-Schicht): Die Domain-Klasse {@link Game} entscheidet, wer
- * gewinnt; dieser Use Case orchestriert Persistenz und Strategie-Auswahl.
- *
- * <p>Nutzt das Strategy-Pattern: ein {@link HandEvaluator} wird per
- * Konstruktor injiziert, sodass Tests eine deterministische Variante
- * (zum Beispiel {@code FixedHandEvaluator}) einsetzen koennen.</p>
- */
 public final class ShowdownUseCase {
 
     private final GameRepository gameRepository;
@@ -35,8 +24,6 @@ public final class ShowdownUseCase {
     }
 
     /**
-     * Ermittelt den Gewinner und zahlt den Pot aus.
-     *
      * @param gameId Spiel im Showdown- oder Finished-Zustand
      * @return Gewinner-Spieler
      */

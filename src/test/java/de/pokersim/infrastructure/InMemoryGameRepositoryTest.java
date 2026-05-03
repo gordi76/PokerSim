@@ -10,12 +10,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests fuer das {@link InMemoryGameRepository}.
- *
- * <p>Stellen sicher, dass die Repository-Implementierung den
- * GameRepository-Vertrag erfuellt: speichern, wiederfinden, Identitaet.</p>
- */
 class InMemoryGameRepositoryTest {
 
     @Test

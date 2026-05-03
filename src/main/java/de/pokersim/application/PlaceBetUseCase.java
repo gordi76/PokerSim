@@ -8,15 +8,6 @@ import de.pokersim.infrastructure.GameRepository;
 
 import java.util.Objects;
 
-/**
- * Use Case: ein Spieler setzt Chips in den Pot.
- *
- * Diese Use-Case-Klasse kapselt die Anwendungs-Logik fuer eine
- * einzelne Bet-Aktion und haelt damit das Aggregate Root {@link Game}
- * frei von Persistenz-Wissen. Die Klasse erfuellt die Dependency Rule
- * von Clean Architecture: sie haengt vom abstrakten {@link GameRepository}
- * ab, nicht von einer konkreten Implementierung.
- */
 public final class PlaceBetUseCase {
 
     private final GameRepository gameRepository;
@@ -26,8 +17,6 @@ public final class PlaceBetUseCase {
     }
 
     /**
-     * Fuehrt einen Einsatz aus und persistiert das Spiel.
-     *
      * @param gameId   bereits bestehende Spiel-Id
      * @param playerId Spieler, der setzt
      * @param amount   Hoehe des Einsatzes

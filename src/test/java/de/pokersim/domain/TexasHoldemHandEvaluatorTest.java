@@ -7,13 +7,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests fuer den {@link TexasHoldemHandEvaluator}.
- *
- * <p>Decken alle 9 {@link HandRank}-Faelle ab und erfuellen damit den
- * ATRIP-Aspekt "Thorough": jede Verzweigung im Evaluator wird durch
- * mindestens einen Test angesteuert.</p>
- */
 class TexasHoldemHandEvaluatorTest {
 
     private final HandEvaluator evaluator = new TexasHoldemHandEvaluator();

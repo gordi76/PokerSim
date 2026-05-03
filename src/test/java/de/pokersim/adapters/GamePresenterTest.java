@@ -33,9 +33,6 @@ class GamePresenterTest {
 
         GameViewModel viewModel = presenter.present(game);
 
-        // Two hole cards per player must have been formatted as
-        // "<rank><suit>" with one or two characters per rank
-        // (e.g. "10H", "JC", "AS").
         for (String line : viewModel.players()) {
             assertTrue(line.contains("hand:"),
                     "every player line should contain its hand");
@@ -47,17 +44,11 @@ class GamePresenterTest {
     @Test
     @DisplayName("ten of hearts is rendered as '10H'")
     void rendersTenOfHearts() {
-        // We use a Game-free path: build a tiny fake game-like presenter
-        // expectation by checking via the public API on a real game.
-        // (Card formatting is private; we verify indirectly through
-        // a ViewModel that includes a card list.)
         Game game = new Game(GameId.newId());
         game.addPlayer("A", new Chips(100));
         game.addPlayer("B", new Chips(100));
         game.start(FixedRandomSource.noShuffle());
 
-        // After start, deck is shuffled (or not, with FixedRandomSource).
-        // We can at least ensure that suits are encoded as one of CDHS.
         GameViewModel viewModel = presenter.present(game);
         for (String playerLine : viewModel.players()) {
             int handIdx = playerLine.indexOf("hand: ");
@@ -67,9 +58,6 @@ class GamePresenterTest {
                     "expected at least one suit code (C/D/H/S) in: " + handPart);
         }
 
-        // Direct sanity: assert that the Card rank/suit enum stays
-        // covered (forces the switch in the presenter to remain
-        // exhaustive over time).
         for (Rank rank : Rank.values()) {
             for (Suit suit : Suit.values()) {
                 assertNotNull(new Card(rank, suit).toString());

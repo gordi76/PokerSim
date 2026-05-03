@@ -16,15 +16,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests fuer den {@link GameService}, einschliesslich aller Use Cases.
- *
- * <p>Verwenden bewusst <strong>beide</strong> selbst geschriebene
- * Fake/Mock-Objekte: {@link FakeGameRepository} (zaehlt save/find-Aufrufe)
- * und {@link FixedRandomSource} (deterministisches Mischen). Dadurch
- * wird der ATRIP-Aspekt "Automatic" eingehalten - die Tests sind
- * vollstaendig reproduzierbar, ohne externe Abhaengigkeit.</p>
- */
 class GameServiceTest {
 
     @Test

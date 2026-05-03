@@ -13,15 +13,6 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests fuer das {@link FileGameRepository}.
- *
- * <p>Beweisen, dass die Repository-Implementierung die
- * Repository-Schnittstelle Liskov-konform implementiert: jede
- * persistierte Game-Instanz kann ueber {@link FileGameRepository#findById}
- * wieder geholt werden, und der Datei-Inhalt enthaelt eine textuelle
- * Zusammenfassung.</p>
- */
 class FileGameRepositoryTest {
 
     @Test

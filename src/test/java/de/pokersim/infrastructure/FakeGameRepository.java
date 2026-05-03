@@ -7,17 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Fake/Spy-Implementierung von {@link GameRepository} fuer Tests.
- *
- * <p>Verhaelt sich wie ein In-Memory-Repository, zaehlt aber zusaetzlich
- * mit, wie oft {@code save()} und {@code findById()} aufgerufen wurden.
- * So koennen Use-Case-Tests pruefen, ob die Persistenz tatsaechlich
- * angesprochen wurde, ohne ein Mocking-Framework zu nutzen.</p>
- *
- * <p>(Protokoll Kapitel 5: zweite Fake/Mock-Implementierung ohne
- * Framework.)</p>
- */
 public final class FakeGameRepository implements GameRepository {
 
     private final Map<GameId, Game> store = new HashMap<>();
