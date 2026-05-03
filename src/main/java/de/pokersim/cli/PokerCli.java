@@ -2,7 +2,10 @@ package de.pokersim.cli;
 
 import de.pokersim.adapters.CommandParser;
 import de.pokersim.adapters.GameController;
+import de.pokersim.adapters.GameSummary;
 import de.pokersim.adapters.GameViewModel;
+import de.pokersim.domain.GameCommand;
+import de.pokersim.domain.GameRules;
 
 import java.util.List;
 
@@ -78,8 +81,37 @@ public final class PokerCli {
                 printGame(viewModel);
                 yield true;
             }
+            case "hand" -> {
+                if (command.arguments().isEmpty()) {
+                    consoleIO.printLine("Usage: hand <player>");
+                    yield true;
+                }
+                consoleIO.printLine(gameController.getPlayerHand(command.arguments().get(0)));
+                yield true;
+            }
+            case "showdown" -> {
+                GameSummary summary = gameController.runShowdown();
+                printSummary(summary);
+                yield true;
+            }
+            case "history" -> {
+                List<GameCommand> history = gameController.commandHistory();
+                if (history.isEmpty()) {
+                    consoleIO.printLine("No actions yet.");
+                } else {
+                    consoleIO.printLine("Action history:");
+                    for (int i = 0; i < history.size(); i++) {
+                        consoleIO.printLine("  " + (i + 1) + ". " + history.get(i));
+                    }
+                }
+                yield true;
+            }
             case "help" -> {
-                printHelp();
+                if (!command.arguments().isEmpty() && command.arguments().get(0).equals("rules")) {
+                    printRules();
+                } else {
+                    printHelp();
+                }
                 yield true;
             }
             case "exit" -> false;
@@ -102,7 +134,7 @@ public final class PokerCli {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException exception) {
-            throw new IllegalArgumentException("amount must be an integer: " + value);
+            throw new IllegalArgumentException("'" + value + "' is not a valid amount (expected integer, e.g. 50)");
         }
     }
 
@@ -118,21 +150,45 @@ public final class PokerCli {
         consoleIO.printLine("  bet <player> <amount>    -> player puts chips into the pot");
         consoleIO.printLine("  fold <player>            -> player gives up the round");
         consoleIO.printLine("  show                     -> shows the current game");
+        consoleIO.printLine("  hand <player>            -> shows a player's hole cards");
+        consoleIO.printLine("  showdown                 -> evaluates hands and determines the winner");
+        consoleIO.printLine("  history                  -> shows all actions taken this game");
         consoleIO.printLine("  help                     -> prints this help");
+        consoleIO.printLine("  help rules               -> prints the game rules");
         consoleIO.printLine("  exit                     -> closes the application");
     }
 
     private void printGame(GameViewModel viewModel) {
         consoleIO.printLine("");
-        consoleIO.printLine("Game: " + viewModel.gameId());
-        consoleIO.printLine("Phase: " + viewModel.phase());
-        consoleIO.printLine(viewModel.pot());
-
-        consoleIO.printLine("Community cards: " + viewModel.communityCards());
-
-        consoleIO.printLine("Players:");
+        consoleIO.printLine("=== " + viewModel.phase() + " ===");
+        consoleIO.printLine("  " + viewModel.pot());
+        consoleIO.printLine("  Community: " + viewModel.communityLabel());
+        consoleIO.printLine("  Players:");
         for (String player : viewModel.players()) {
-            consoleIO.printLine("  - " + player);
+            consoleIO.printLine("    " + player);
         }
+    }
+
+    private void printRules() {
+        consoleIO.printLine("Game Rules (Texas Hold'em):");
+        consoleIO.printLine("  Starting chips : " + GameRules.INITIAL_CHIPS);
+        consoleIO.printLine("  Small blind    : " + GameRules.SMALL_BLIND);
+        consoleIO.printLine("  Min players    : " + GameRules.MIN_PLAYERS);
+        consoleIO.printLine("  Max players    : " + GameRules.MAX_PLAYERS);
+    }
+
+    private void printSummary(GameSummary summary) {
+        consoleIO.printLine("");
+        consoleIO.printLine("=== SHOWDOWN ===");
+        for (String line : summary.playerHandSummaries()) {
+            consoleIO.printLine("  " + line);
+        }
+        consoleIO.printLine("");
+        consoleIO.printLine("Winner: " + summary.winnerName());
+        consoleIO.printLine(summary.winnerName() + " wins " + summary.chipsWon() + " chips.");
+        if (summary.foldedPlayers() > 0) {
+            consoleIO.printLine(summary.foldedPlayers() + " of " + summary.totalPlayers() + " player(s) folded.");
+        }
+        consoleIO.printLine("Game phase: FINISHED");
     }
 }

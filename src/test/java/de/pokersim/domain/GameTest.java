@@ -57,8 +57,9 @@ class GameTest {
         game.advancePhase(); // FLOP
         game.advancePhase(); // TURN
         game.advancePhase(); // RIVER
+        game.advancePhase(); // SHOWDOWN
 
-        game.advancePhase(); // RIVER -> auto showdown -> FINISHED
+        game.advancePhase(); // SHOWDOWN -> FINISHED
 
         assertEquals(GamePhase.FINISHED, game.phase());
         assertTrue(game.pot().isEmpty(), "pot must be paid out after auto-showdown");
@@ -89,7 +90,8 @@ class GameTest {
         game.advancePhase(); // FLOP
         game.advancePhase(); // TURN
         game.advancePhase(); // RIVER
-        game.advancePhase(); // -> auto showdown / FINISHED
+        game.advancePhase(); // SHOWDOWN
+        game.advancePhase(); // -> FINISHED
 
         boolean anyoneAboveStartingStack = game.players().stream()
                 .filter(p -> !p.hasFolded())

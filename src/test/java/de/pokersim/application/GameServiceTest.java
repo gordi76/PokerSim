@@ -107,7 +107,8 @@ class GameServiceTest {
         GameService service = new GameService(repository, FixedRandomSource.noShuffle());
         GameId gameId = service.startGame(List.of("Alice", "Bob"));
 
-        // PRE_FLOP -> FLOP -> TURN -> RIVER -> auto showdown FINISHED
+        // PRE_FLOP -> FLOP -> TURN -> RIVER -> SHOWDOWN -> FINISHED
+        service.advancePhase(gameId);
         service.advancePhase(gameId);
         service.advancePhase(gameId);
         service.advancePhase(gameId);
